@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Go Gurgaon chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; display: flex; align-items: center; height: 2vw; }
+      #messages li:nth-child(odd) { background: #eee; }
+      img.img { width: 2vw; height: 2vw; border-radius: 50%;}
+      span.name { width: 100px; align-items: center; margin-left: 1vw;}
+      span.msg {  color: #2110de; margin-left: 1vw; }
+    </style>
+  </head>
+  <body>
+    {{ if .Error }}
+    <div class="error">{{.}}</div>
+    {{ end }}
+    {{ if .User }}
+    <ul id="messages"></ul>
+    <form id="form" onsubmit="sendMessage(event)">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/assets/socket.io-1.3.7.js"></script>
+    <script src="/assets/jquery-1.11.1.js"></script>
+    <script>
+
+      var socket = io();
+
+      function sendMessage(e) {
+        e.preventDefault();
+        socket.emit('message', document.getElementById('m').value);
+        document.getElementById('m').value = '';
+        return false;
+      }
+      socket.on('message', function(msg){
+        let container = document.createElement('li');
+        container.innerHTML = '<img class="img" src="'+msg.User.Picture+'"><span class="name">'+msg.User.Name+'</span>:<span class="msg">'+msg.Msg+'</span>';
+        document.getElementById('messages').appendChild(container);
+      });
+      socket.on('user-join', function(msg){
+        let container = document.createElement('li');
+        container.innerHTML = '<img class="img" src="'+msg.User.Picture+'"><span class="name">'+msg.User.Name+'</span>  has joined the chat';
+        document.getElementById('messages').appendChild(container);
+      });
+      socket.on('disconnected', function(msg){
+        let container = document.createElement('li');
+        container.innerHTML = '<img class="img" src="'+msg.Picture+'"><span class="name">'+msg.Name+'</span>  has left the chat';
+        document.getElementById('messages').appendChild(container);
+      });
+      socket.emit('user-join', JSON.stringify({Name: '{{.User.Name}}', ID:'', Email: '{{.User.Email}}', Picture: '{{.User.Picture}}'}));
+    </script>
+    {{ end }}
+  </body>
+</html>
