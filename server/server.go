@@ -10,6 +10,11 @@ import (
 	"github.com/melvinodsa/chat-application/models"
 )
 
+/*
+ * This file contains the server implementation for the chat application.
+ * It includes the socket.io implementation.
+ */
+
 //server to hold the server instance
 var server *sio.Server
 
@@ -18,7 +23,7 @@ var server *sio.Server
 func InitServer() {
 	/*
 	 * We will first intialize a server
-	 * Then we will register the on connection event'
+	 * Then we will register the on connection event
 	 * Then we will register on error event
 	 * Then we will set the initialized server instance to the global server instance
 	 */
